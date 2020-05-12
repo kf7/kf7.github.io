@@ -1,121 +1,89 @@
-# Kohana framework 7
+---
+layout: default
+title: About
+---
+# About KF7
 
-PHP-7-compatible replacement for [Kohana](https://github.com/kohana)/[Koseven](https://github.com/koseven) framework.
+PHP-7-compatible replacement for [Kohana](https://github.com/kohana) and [Koseven](https://github.com/koseven) frameworks.
 
 ## Features
 
 Fully compatible with PHP 7, modern and pure code:
 
-- Namespaces, type declarations, `Throwable` errors/exceptions
-- Strict separation of classes into static and dynamic
-- Maximum "chainable" methods
-- Minimum static and [magic methods](https://www.php.net/manual/en/language.oop5.magic.php)
-- PHP polyfills
+- New syntax: namespaces, type declaration and [throwables](https://www.php.net/manual/en/class.throwable.php)
+- Strict separation of static and dynamic classes and getter/setter methods
+- More interfaces and "chainable" methods
+- Less static and [magic methods](https://www.php.net/manual/en/language.oop5.magic.php)
+- PHPDoc comments
 
 [PSR](https://www.php-fig.org/psr/) compatible:
 
-- PSR-1, PSR-12 coding style
+- PSR-12 coding style
+- PSR-5, PSR-19 documentation
 - PSR-4 autoloading
-- ~~PSR-3 logging~~
+- PSR-3 logging
+- PSR-16 caching
 - ~~PSR-11 containers~~
-- ~~PSR-16 caching~~
 - ~~PSR-7, PSR-15, PSR-17, PSR-18 HTTP routing~~
 
 ## Requirements
 
-- PHP >= 7.1
+- PHP >= 7.2
 - PHP extensions:
   - [mbstring](https://www.php.net/manual/en/book.mbstring.php)
   - [filter](https://www.php.net/manual/en/book.filter.php)
-  - [iconv](https://www.php.net/manual/en/iconv.installation.php)
-- Composer packages:
-  - [symfony/polyfill](https://github.com/symfony/polyfill)
-  - ~~[psr/log](https://packagist.org/packages/psr/log)~~
-  - ~~[psr/container](https://packagist.org/packages/psr/container)~~
-  - ~~[psr/simple-cache](https://packagist.org/packages/psr/simple-cache)~~
-  - ~~[psr/http-message](https://packagist.org/packages/psr/http-message)~~
-  - ~~[psr/http-factory](https://packagist.org/packages/psr/http-factory)~~
-  - ~~[psr/http-client](https://packagist.org/packages/psr/http-client)~~
-  - ~~[psr/http-server-middleware](https://packagist.org/packages/psr/http-server-middleware)~~
+  - [hash](https://www.php.net/manual/en/book.fhash.php)
+  - [iconv](https://www.php.net/manual/en/book.iconv.php)
 
-## Packages
+## Structure
 
-A package is the basic structure for applications and modules.
-
-### Structure
-
-Common directories:
-
-- `src`_*_ - source files (classes, interfaces)
-- `tests`_*_ - unit tests
+- `src` - source code (classes, interfaces)
+- `tests` - unit tests
 - `config` - configuration files
 - `views` - templates
-- `i18n` - translation/message files
-- `media` - assets files (images, fonts, scripts, styles)
-  - `public` - public files
-- `vendor` - external packages (dependencies)
+- `i18n` - translation and messages
+- `media` - assets files (scripts, styles, images and etc.)
 - `docs` - documentation
-
-System:
-
-- `src/System/Kohana.php`_*_ - framework manager extended `KF7\System\AbstractKohana`
-
-Module:
-
-- `src/{Module}/Module.php`_*_ - module manager extended `KF7\System\AbstractModule`
-
-Application:
-
-- `src/Application/Application.php`_*_ - application manager extended `KF7\System\AbstractApplication`
-- `cache` - temp/cache files
-- `logs` - error logs
-
-_*_ - required directories and files
-
-
+- `vendor` - Composer packages (dependencies)
 
 ## Backward incompatible changes
 
-[Upgrading Kohana to Koseven](https://koseven.ga/documentation/kohana/upgrading-from-kohana).
+[Upgrading Kohana to Koseven](https://koseven.ga/documentation/kohana/upgrading-from-kohana)
 
-Upgrading Koseven to KF7, breaking changes:
+Upgrading Koseven:
 
-- Package directories:
-  - Renamed `classes` to `scr`
-  - Deleted `messages`, messages moved into `i18n` files
-- Package sources must be in namespace with prefix `{Vendor}\{Package}\`:
-  - `{Vendor}` is vendor/contributor name, for framework packages it's `KF7`
-  - `{Package}` is package name where class/interface was defined, main packages: system - `System`, application - `Application`
-- Package must contain implementation of `KF7\System\PackageInterface`:
-  - System: `class KF7\System\Kohana extends KF7\System\AbstractKohana`
-  - Application: `class KF7\Application\Application extends KF7\System\AbstractApplication`
-  - Module: `class {Vendor}\{Package}\Module extends KF7\System\AbstractPackage` instead deleted file `init.php`
-- Global constants removed, replace them with
-  - `dirname($_SERVER['PHP_SELF'])` instead `DOCROOT`
-  - `KF7\System\Kohana::getPath()` instead `SYSPATH`
-  - `KF7\Application\Application::getPath()` instead `APPPATH`
-- New class extension
-
+- Directories
+  - `/classes` renamed to `/scr`
+  - `/guide` renamed to `/docs`
+  - `/utf8` and `/messages` are removed (messages moved into `/i18n`)
+- Global constants (`SYSPATH`, `APPPATH` and etc.) are removed (use `Kohana\Filesystem` instead)
+- Classes/interfaces are renamed
   ~~~php
-  class KO7_Module_Classname {
+  <?php
+  class Kohana_Classname {
       <...>
   }
-  class Module_Classname extends KO7_Module_Classname {}
   ~~~
-
-  changed to
-
   ~~~php
-  namespace KF7\Module;
+  <?php
+  class Classname extends Kohana_Classname {}
+  ~~~
+  changed to
+  ~~~php
+  <?php
+  namespace Kohana;
   abstract class AbstractClassname
   {
       <...>
   }
+  ~~~
+  ~~~php
+  <?php
+  namespace Kohana;
   class Classname extends AbstractClassname
   {
   }
   ~~~
-
-- Removed `factory`/`instance` methods, create [factory classes](https://designpatternsphp.readthedocs.io/en/latest/Creational/FactoryMethod/)
-- Sepatate setter and getter methods: `KO7::modules()`
-- Initialize stratic classes implemented `KF7\System\StaticInterface` at loading.
+- `factory` and `instance` methods are replaced to [factory classes](https://designpatternsphp.readthedocs.io/en/latest/Creational/FactoryMethod/)
+- Sepatated setters and getters: `Kohana::modules()` to `Kohana\Kohana::getModules()` and `Kohana\Kohana::setModules()`
+- Initialize static classes implemented `Kohana\StaticInterface` at class autoloading
